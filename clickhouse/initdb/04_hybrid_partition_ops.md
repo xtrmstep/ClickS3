@@ -8,6 +8,17 @@ The table `shared.events_hybrid` uses:
 
 ## Verify where partitions are stored
 
+Insert data into the table and check partition locations:
+
+```sql
+INSERT INTO shared.events_hybrid (event_time, user_id, event_type, payload) VALUES
+(current_timestamp(), 1, 'close', 'data'),
+(current_timestamp() - toIntervalDay(5), 2, 'close', 'data'),
+(current_timestamp() - toIntervalDay(15), 3, 'close', 'data'),
+(current_timestamp() - toIntervalMonth(2), 4, 'close', 'data'),
+(current_timestamp() - toIntervalMonth(3), 5, 'close', 'data');
+```
+
 ```sql
 SELECT
     partition,
