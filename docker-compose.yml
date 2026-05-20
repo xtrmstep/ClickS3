@@ -81,9 +81,9 @@ services:
     ports:
       - "8080:8080"
 
-  clickhouse:
+  ch-writer:
     image: clickhouse/clickhouse-server:26.1-alpine
-    container_name: clickhouse
+    container_name: ch-writer
     environment:
       CLICKHOUSE_USER: default
       CLICKHOUSE_PASSWORD: clickhouse
@@ -105,7 +105,31 @@ services:
       - "9002:9000"
     volumes:
       - ./clickhouse/config.d:/etc/clickhouse-server/config.d:ro
-      - ./clickhouse/initdb:/docker-entrypoint-initdb.d:ro
+      - ./clickhouse/writer-initdb:/docker-entrypoint-initdb.d:ro
+
+  ch-reader:
+    image: clickhouse/clickhouse-server:26.1-alpine
+    container_name: ch-reader
+    environment:
+      CLICKHOUSE_USER: default
+      CLICKHOUSE_PASSWORD: clickhouse
+    depends_on:
+      minio:
+        condition: service_started
+      mc-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://127.0.0.1:8123/ping || exit 1"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 60s
+    ports:
+      - "8124:8123"
+      - "9003:9000"
+    volumes:
+      - ./clickhouse/config.d:/etc/clickhouse-server/config.d:ro
+      - ./clickhouse/reader-initdb:/docker-entrypoint-initdb.d:ro
 
 volumes:
   minio_data:

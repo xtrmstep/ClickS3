@@ -10,7 +10,8 @@ ClickHouse stores all data in MinIO (S3-compatible). Kafka streams events into C
 | `mc-init` | Creates bucket, users, and policies on startup |
 | `kafka` | Event stream broker, topic `events_stream` |
 | `kafka-ui` | Kafka web UI at `localhost:8080` |
-| `clickhouse` | Single ClickHouse node; data stored in MinIO |
+| `ch-writer` | Writer ClickHouse node (Kafka + hybrid writer table) |
+| `ch-reader` | Reader ClickHouse node (read-only view over shared S3 dataset) |
 
 ## Key concepts
 
@@ -29,11 +30,11 @@ Wait for all services to be healthy, then query:
 
 ```bash
 # raw events
-docker exec -it clickhouse clickhouse-client -u default --password clickhouse \
+docker exec -it ch-writer clickhouse-client -u default --password clickhouse \
   -q "SELECT * FROM shared.events ORDER BY event_time"
 
 # aggregated counts from Kafka stream
-docker exec -it clickhouse clickhouse-client -u default --password clickhouse \
+docker exec -it ch-writer clickhouse-client -u default --password clickhouse \
   -q "SELECT * FROM shared.events_by_type"
 ```
 
@@ -42,3 +43,14 @@ Send test events via the producer:
 ```bash
 cd producer && uv run produce.py
 ```
+
+
+## Writer/reader shared S3 test
+
+Run the cross-node visibility test:
+
+```bash
+./tests_cross_reader_writer.sh
+```
+
+This test inserts into `shared.events_hybrid_writer` on `ch-writer` and asserts the same row count is visible through `shared.events_hybrid_shared_s3` on `ch-reader`.
