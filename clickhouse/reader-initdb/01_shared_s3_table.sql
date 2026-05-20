@@ -1,6 +1,6 @@
 CREATE DATABASE IF NOT EXISTS shared;
 
-CREATE TABLE IF NOT EXISTS shared.events_hybrid_shared_s3
+CREATE TABLE IF NOT EXISTS shared.events_shared_s3
 (
     event_time DateTime,
     user_id    UInt64,
@@ -8,7 +8,7 @@ CREATE TABLE IF NOT EXISTS shared.events_hybrid_shared_s3
     payload    String
 )
 ENGINE = S3(
-    'http://minio:9000/ch-shared/shared-exchange/events_hybrid_shared.ndjson',
+    'http://minio:9000/ch-shared/shared-exchange/events_shared_s3.ndjson',
     'reader',
     'reader-secret',
     'JSONEachRow'

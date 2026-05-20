@@ -53,4 +53,4 @@ Run the cross-node visibility test:
 ./tests_cross_reader_writer.sh
 ```
 
-This test inserts into `shared.events_hybrid_writer` on `ch-writer` and asserts the same row count is visible through `shared.events_hybrid_shared_s3` on `ch-reader`.
+This test inserts into `shared.events_shared_s3` on `ch-writer` and asserts the same row count is visible from `shared.events_shared_s3` on `ch-reader`.
