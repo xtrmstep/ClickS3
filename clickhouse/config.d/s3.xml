@@ -17,6 +17,17 @@
           </main>
         </volumes>
       </s3_main>
+
+      <hybrid_local_s3>
+        <volumes>
+          <hot>
+            <disk>default</disk>
+          </hot>
+          <cold>
+            <disk>s3_disk</disk>
+          </cold>
+        </volumes>
+      </hybrid_local_s3>
     </policies>
   </storage_configuration>
 </clickhouse>
