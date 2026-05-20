@@ -17,6 +17,7 @@ ClickHouse stores all data in MinIO (S3-compatible). Kafka streams events into C
 - **Storage in S3** — ClickHouse uses `s3_main` storage policy. All table data lives in MinIO, not on local disk.
 - **Kafka ingestion** — `events_kafka_queue` is a Kafka engine table. Two materialized views fan out incoming messages to `events_raw` (raw rows) and `events_by_type` (aggregated counts).
 - **Separation of compute and storage** — ClickHouse is stateless; you can restart or scale it without losing data.
+- **Hybrid tiering option** — `shared.events_hybrid` keeps recent monthly partition(s) on local disk and moves older data to S3 with TTL. See `clickhouse/initdb/04_hybrid_partition_ops.md` for manual partition movement commands.
 
 ## Run
 
